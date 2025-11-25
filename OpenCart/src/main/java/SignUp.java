@@ -1,6 +1,11 @@
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 
 public class SignUp extends SetupPage {
@@ -28,7 +33,7 @@ public class SignUp extends SetupPage {
     private WebElement privacyPolicyCheckbox;
 
     @FindBy(xpath = "//form[@id='form-register']//button[text()='Continue']")
-    WebElement continueBtn;
+    private WebElement continueBtn;
 
     // This element's XPath looks like it might be for a success message or a link after registration.
     // If it's a link to agree to terms *before* registration, it should be handled differently.
@@ -36,14 +41,8 @@ public class SignUp extends SetupPage {
     @FindBy(xpath = "/html/body/div/main/div[2]/div/div/div/a")
     private WebElement agreeSignup;
 
-    @FindBy(xpath = "//*[@id=\"content\"]/h1")
+    @FindBy(xpath = "/html/body/div/main/div[2]/div/div/h1")
     private WebElement accountCreatedMessage;
-
-    @FindBy(id = "error-firstname")
-    private WebElement firstNameError;
-
-    @FindBy(id = "error-lastname")
-    private WebElement lastNameError;
 
     @FindBy(id = "error-email")
     private WebElement emailError;
@@ -53,17 +52,11 @@ public class SignUp extends SetupPage {
 
     @FindBy(id = "error-password")
     private WebElement passwordError;
-    /**
-     * Clicks the initial Sign Up button to navigate to the registration form.
-     */
+
     public void clickSignUp() {
         clickWhenClickable(SignUpBtn, 10); // Using clickWhenClickable for robustness
     }
 
-    /**
-     * Enters the first name into the first name field.
-     * @param fname The first name to enter.
-     */
     public void setFirstName(String fname) {
         firstName.clear();
         firstName.sendKeys(fname);
@@ -139,19 +132,62 @@ public class SignUp extends SetupPage {
     public String getAccountCreatedMessage() {
         return accountCreatedMessage.getText();
     }
-    public String getFirstFieldError(){
-        return firstNameError.getText();
+    public String getFirstFieldError() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        WebElement firstNameField = driver.findElement(By.id("input-firstname"));
+
+        // Scroll into view so the error message becomes visible
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", firstNameField);
+
+        // Now wait for the error message
+        WebElement errorfirstname = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[@id=\"error-firstname\"]")
+        ));
+
+        return errorfirstname.getText().trim();
     }
     public String getLastFieldError(){
-        return lastNameError.getText();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        WebElement lastNameError = driver.findElement(By.id("input-lastname"));
+
+        // Scroll into view so the error message becomes visible
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", lastNameError);
+
+        // Now wait for the error message
+        WebElement errorlastname = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[@id=\"error-lastname\"]")
+        ));
+        return errorlastname.getText().trim();
     }
+
     public String getEmailFieldError(){
         return emailError.getText();
     }
-    public String getRepeatedEmailError(){
-        return repeatedEmailError.getText();
+    public String getRepeatedEmailError() {
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        // Scroll to the alert box
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView(true);", repeatedEmailError);
+
+        // Wait until the alert becomes visible
+        wait.until(ExpectedConditions.visibilityOf(repeatedEmailError));
+
+        return repeatedEmailError.getText().trim();
     }
     public String getPasswordFieldError(){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        // Scroll to the alert box
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView(true);", passwordError);
+
+        // Wait until the alert becomes visible
+        wait.until(ExpectedConditions.visibilityOf(passwordError));
+
         return passwordError.getText();
     }
 
@@ -159,3 +195,4 @@ public class SignUp extends SetupPage {
         return driver.getCurrentUrl();
     }
 }
+
