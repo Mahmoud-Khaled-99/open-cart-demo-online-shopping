@@ -30,10 +30,6 @@ public class LogInPage extends SetupPage {
         super();
     }
 
-    public LogInPage(WebDriver driver) {
-        super(driver);
-    }
-
     // -------------------------------------------------------------
     // ⭐ Reusable Wait Helpers
     // -------------------------------------------------------------

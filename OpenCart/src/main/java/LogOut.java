@@ -15,58 +15,51 @@ public class LogOut extends SetupPage {
     @FindBy(xpath = "//*[@id=\"top\"]/div/div/div[2]/ul/li[2]/div/a/span")
     private WebElement accountMenuBtn;
 
-    @FindBy(xpath = "//*[@id='top']//a[text()='Logout']")
+    @FindBy(xpath = "//*[@id=\"top\"]/div/div/div[2]/ul/li[2]/div/ul/li[5]/a")
     private WebElement logoutBtn;
 
     @FindBy(xpath = "//*[@id='content']//a[text()='Continue']")
     private WebElement confirmLogoutBtn;
+
     // ===========================
-    // Actions
+    // Actions (Enhanced with Waits)
     // ===========================
 
     /**
-     * Waits for the Logout button to be visible & clickable, then clicks it.
+     * Clicks the account menu to reveal logout option.
+     * Includes visibility + clickable waits.
      */
-    public void clickLogout() {
+    public void clickLogOutMenu() {
+        waitForVisibility(accountMenuBtn);
+        clickWhenClickable(accountMenuBtn, DEFAULT_TIMEOUT);
+    }
+
+    /**
+     * Clicks the initial Logout button after waiting for it.
+     */
+    public void clickLogOut() {
         waitForVisibility(logoutBtn);
         clickWhenClickable(logoutBtn, DEFAULT_TIMEOUT);
     }
 
     /**
-     * Waits for the confirmation Continue button to be visible & clickable, then clicks it.
+     * Clicks the 'Continue' button on the logout confirmation page.
      */
-    public void clickConfirmLogout() {
+    public void clickConfirmLogOut() {
         waitForVisibility(confirmLogoutBtn);
         clickWhenClickable(confirmLogoutBtn, DEFAULT_TIMEOUT);
     }
 
     /**
-     * Complete logout flow:
-     * 1. Click Logout
-     * 2. Explicitly wait for the confirmation page
-     * 3. Click Continue
+     * Performs the complete logout process with transition waits.
      */
     public void performLogout() {
-        clickLogout();                                 // Step 1
-        waitForVisibility(confirmLogoutBtn, 10);        // Step 2 (safe wait for transition)
-        clickConfirmLogout();                           // Step 3
-    }
+        waitForVisibility(accountMenuBtn); // Ensure account menu is visible
+        clickLogOutMenu();                                // Step 1
+        waitForVisibility(logoutBtn);    // Ensure logout option is visible
+        clickLogOut();                                    // Step 2
 
-    // ===========================
-    // Verification Helpers
-    // ===========================
-
-    /**
-     * Returns true if the Logout button is visible.
-     */
-    public boolean isLogoutButtonVisible() {
-        return isElementVisible(logoutBtn, 5);
-    }
-
-    /**
-     * Returns true if the Continue button is visible on the confirmation page.
-     */
-    public boolean isConfirmLogoutVisible() {
-        return isElementVisible(confirmLogoutBtn, 5);
+        waitForVisibility(confirmLogoutBtn); // Wait for confirmation page
+        clickConfirmLogOut();                                 // Step 3
     }
 }
