@@ -11,6 +11,7 @@ import java.time.Duration;
 
 public class SetupPage {
     public static WebDriver driver = null;
+    public static final int DEFAULT_TIMEOUT = 10;
 
     public SetupPage() {
         // Default constructor
@@ -99,6 +100,10 @@ public class SetupPage {
             actions.moveToElement(hoverElement).perform();
             clickWhenClickable(clickElement, timeoutSeconds);
         }
+    public WebElement waitForVisibility(WebElement element) {
+        return new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT))
+                .until(ExpectedConditions.visibilityOf(element));
+    }
 
         @FindBy(xpath = "//*[@id='top']//span[text()='My Account']")
         private WebElement myAccountBtn;

@@ -2,36 +2,71 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class LogOut extends SetupPage {
+
+    private static final int DEFAULT_TIMEOUT = 10;
+
     public LogOut() {
-        // Default constructor, implicitly calls SetupPage constructor
+        super();
     }
+
+    // ===========================
+    // Locators
+    // ===========================
+    @FindBy(xpath = "//*[@id=\"top\"]/div/div/div[2]/ul/li[2]/div/a/span")
+    private WebElement accountMenuBtn;
 
     @FindBy(xpath = "//*[@id='top']//a[text()='Logout']")
-    private WebElement logOutBtn;
+    private WebElement logoutBtn;
 
     @FindBy(xpath = "//*[@id='content']//a[text()='Continue']")
-    private WebElement confirmLogOutBtn;
+    private WebElement confirmLogoutBtn;
+    // ===========================
+    // Actions
+    // ===========================
 
     /**
-     * Clicks the initial Logout button, typically found in the header or account menu.
+     * Waits for the Logout button to be visible & clickable, then clicks it.
      */
-    public void clickLogOut() {
-        clickWhenClickable(logOutBtn, 10);
+    public void clickLogout() {
+        waitForVisibility(logoutBtn);
+        clickWhenClickable(logoutBtn, DEFAULT_TIMEOUT);
     }
 
     /**
-     * Clicks the 'Continue' button on the logout confirmation page.
+     * Waits for the confirmation Continue button to be visible & clickable, then clicks it.
      */
-    public void clickConfirmLogOut() {
-        clickWhenClickable(confirmLogOutBtn, 10);
+    public void clickConfirmLogout() {
+        waitForVisibility(confirmLogoutBtn);
+        clickWhenClickable(confirmLogoutBtn, DEFAULT_TIMEOUT);
     }
 
     /**
-     * Performs the complete logout process, from clicking the logout link to confirming it.
-     * This method assumes the user is already logged in and on a page where the logout link is visible.
+     * Complete logout flow:
+     * 1. Click Logout
+     * 2. Explicitly wait for the confirmation page
+     * 3. Click Continue
      */
     public void performLogout() {
-        clickLogOut(); // Clicks the 'Logout' link
-        clickConfirmLogOut(); // Clicks the 'Continue' button on the logout confirmation page
+        clickLogout();                                 // Step 1
+        waitForVisibility(confirmLogoutBtn, 10);        // Step 2 (safe wait for transition)
+        clickConfirmLogout();                           // Step 3
+    }
+
+    // ===========================
+    // Verification Helpers
+    // ===========================
+
+    /**
+     * Returns true if the Logout button is visible.
+     */
+    public boolean isLogoutButtonVisible() {
+        return isElementVisible(logoutBtn, 5);
+    }
+
+    /**
+     * Returns true if the Continue button is visible on the confirmation page.
+     */
+    public boolean isConfirmLogoutVisible() {
+        return isElementVisible(confirmLogoutBtn, 5);
     }
 }
