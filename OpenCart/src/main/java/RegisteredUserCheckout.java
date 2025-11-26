@@ -5,14 +5,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class RegisteredUserCheckout extends SetupPage {
-
+    private static final Duration DEFAULT_WAIT = Duration.ofSeconds(15);
+    private static final String BASE_URL = "http://localhost/opencartproject/index.php?route=account/login&language=en-gb";
     private final WebDriver driver;
     private final WebDriverWait wait;
     private final JavascriptExecutor js;
-    private static final Duration DEFAULT_WAIT = Duration.ofSeconds(15);
-    private static final String BASE_URL = "http://localhost/opencartproject/index.php?route=account/login&language=en-gb";
 
     public RegisteredUserCheckout(WebDriver driver) {
         this.driver = driver;
@@ -20,25 +20,15 @@ public class RegisteredUserCheckout extends SetupPage {
         this.js = (JavascriptExecutor) driver;
     }
 
-    // ==========================
+    // ========================================================================================================
     // Helper Waits
-    // ==========================
+    // ========================================================================================================
     private WebElement waitForVisibility(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     private WebElement waitForClickable(By locator) {
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
-    }
-
-    private void safeClick(WebElement element) {
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-        try {
-            element.click();
-        } catch (Exception e) {
-            // fallback to JS click
-            js.executeScript("arguments[0].click();", element);
-        }
     }
 
     private void waitForStability(By locator) {
@@ -57,29 +47,39 @@ public class RegisteredUserCheckout extends SetupPage {
         });
     }
 
+    public void waitForAjax() {
+        new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> (Boolean) ((JavascriptExecutor) driver).executeScript("return window.jQuery != null && jQuery.active === 0;"));
+    }
+
+    // ========================================================================================================
+    // Helper Actions
+    // ========================================================================================================
+    private void safeClick(WebElement element) {
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        try {
+            element.click();
+        } catch (Exception e) {
+            // fallback to JS click
+            js.executeScript("arguments[0].click();", element);
+        }
+    }
+
     private boolean isElementVisible(By locator, int timeoutSeconds) {
-            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
-            shortWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-            return true;   // Element became visible
+        WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
+        shortWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        return true;   // Element became visible
     }
 
     private void scrollIntoView(WebElement element) {
         js.executeScript("arguments[0].scrollIntoView({block:'center'});", element);
     }
 
-    public void waitForAjax() {
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(driver -> (Boolean)((JavascriptExecutor) driver)
-                        .executeScript("return window.jQuery != null && jQuery.active === 0;"));
-    }
-
-    // ==========================
+    // ========================================================================================================
     // Main Checkout Flow
-    // ==========================
+    // ========================================================================================================
     public boolean performFullCheckout(String email, String password) {
         try {
             driver.get(BASE_URL);
-
             // Login flow
             safeClick(waitForClickable(By.xpath("(//span[normalize-space()='My Account'])[1]")));
             safeClick(waitForClickable(By.xpath("(//a[normalize-space()='Login'])[1]")));
@@ -102,8 +102,7 @@ public class RegisteredUserCheckout extends SetupPage {
             safeClick(homebutton);
 
             // Add first product to cart
-            WebElement addToCart = waitForClickable(By.xpath(
-                    "/html/body/div/main/div[2]/div/div/div[2]/div[2]/div/div[2]/form/div/button[1]"));
+            WebElement addToCart = waitForClickable(By.xpath("/html/body/div/main/div[2]/div/div/div[2]/div[2]/div/div[2]/form/div/button[1]"));
             scrollIntoView(addToCart);
             safeClick(addToCart);
 
@@ -160,9 +159,9 @@ public class RegisteredUserCheckout extends SetupPage {
             safeClick(continueBtn);
             waitForVisibility(By.xpath("//*[@id=\"input-shipping-existing\"]"));
             waitForClickable(By.xpath("//*[@id=\"input-shipping-existing\"]"));
-// =========================
-// SHIPPING METHOD
-// =========================
+            // =======================================================================================================
+            // SHIPPING METHOD
+            // =======================================================================================================
             By shippingChooseBtn = By.xpath("(//button[normalize-space()='Choose'])[1]");
 
             waitForVisibility(shippingChooseBtn);
@@ -172,7 +171,7 @@ public class RegisteredUserCheckout extends SetupPage {
             safeClick(waitForClickable(shippingChooseBtn));
             waitForStability(shippingChooseBtn);
 
-// Click "Continue"
+            // Click "Continue"
             By shippingContinueBtn = By.id("button-shipping-method");
 
             waitForVisibility(shippingContinueBtn);
@@ -182,9 +181,9 @@ public class RegisteredUserCheckout extends SetupPage {
             safeClick(waitForClickable(shippingContinueBtn));
 
 
-// =========================
-// PAYMENT METHOD
-// =========================
+            // ====================================================================================================
+            // PAYMENT METHOD
+            // ====================================================================================================
             By paymentChooseBtn = By.xpath("(//button[normalize-space()='Choose'])[2]");
 
             waitForVisibility(paymentChooseBtn);
@@ -194,7 +193,7 @@ public class RegisteredUserCheckout extends SetupPage {
             safeClick(waitForClickable(paymentChooseBtn));
 
 
-// Wait for payment modal
+            // Wait for payment modal
             By paymentContinueBtn = By.xpath("/html/body/div[3]/div/div/div[2]/form/div[2]/button");
 
             waitForVisibility(paymentContinueBtn);
@@ -203,13 +202,13 @@ public class RegisteredUserCheckout extends SetupPage {
 
             safeClick(waitForClickable(paymentContinueBtn));
 
-// Wait for modal to disappear
+            // Wait for modal to disappear
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.modal.show")));
 
 
-// =========================
-// CONFIRM ORDER
-// =========================
+            // ====================================================================================================
+            // CONFIRM ORDER
+            // ====================================================================================================
             By confirmOrderBtn = By.xpath("//button[normalize-space()='Confirm Order']");
 
             waitForVisibility(confirmOrderBtn);
@@ -217,9 +216,9 @@ public class RegisteredUserCheckout extends SetupPage {
             waitForStability(confirmOrderBtn);
 
             safeClick(waitForClickable(confirmOrderBtn));
-// =========================
-// VALIDATION
-// =========================
+            // ====================================================================================================
+            // VALIDATION
+            // ====================================================================================================
             By successMessage = By.id("content");
             waitForAjax();
             waitForVisibility(successMessage);
@@ -229,6 +228,82 @@ public class RegisteredUserCheckout extends SetupPage {
             //System.out.println("Success Message: " + successText);
             return success.getText().contains("Your order has been placed");
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean dropOrder(String email, String password, int orderNumber) {
+        try {
+            driver.get(BASE_URL);
+            // Login flow
+            safeClick(waitForClickable(By.xpath("(//span[normalize-space()='My Account'])[1]")));
+            safeClick(waitForClickable(By.xpath("(//a[normalize-space()='Login'])[1]")));
+
+            WebElement emailInput = waitForVisibility(By.id("input-email"));
+            emailInput.clear();
+            emailInput.sendKeys(email);
+
+            WebElement passwordInput = waitForVisibility(By.id("input-password"));
+            passwordInput.clear();
+            passwordInput.sendKeys(password);
+
+            safeClick(waitForClickable(By.xpath("(//button[normalize-space()='Login'])[1]")));
+
+            // Wait until account/home page
+            wait.until(ExpectedConditions.urlContains("route=account/account"));
+
+            // Go to home page
+            WebElement homebutton = waitForClickable(By.xpath("//a[i[@class='fas fa-home']]"));
+            safeClick(homebutton);
+
+            //go to product Order
+            safeClick(waitForClickable(By.xpath("(//span[normalize-space()='My Account'])[1]")));
+            safeClick(waitForClickable(By.xpath("(//a[normalize-space()='Order History'])[1]")));
+            waitForVisibility(By.cssSelector("#content"));
+            By viewButton = By.xpath("//td[@class='text-end' and normalize-space()='#" + orderNumber + "']/parent::tr/td[last()]/a/i");
+            waitForVisibility(viewButton);
+            safeClick(waitForClickable(viewButton));
+
+            //Delete Order
+            By deleteButton = By.xpath("//*[@id=\"product-row-0\"]/td[5]/div/a");
+            waitForVisibility(deleteButton);
+            safeClick(waitForClickable(deleteButton));
+
+            //confirm deletion
+            waitForVisibility(By.cssSelector("#input-return-reason-1"));
+            scrollIntoView(waitForVisibility(By.cssSelector("#input-return-reason-1")));
+            safeClick(waitForClickable(By.cssSelector("#input-return-reason-1")));
+            WebElement comfirmation = waitForClickable(By.xpath("//button[contains(normalize-space(.),'Submit')]"));
+            //scroll down to the button
+            //scrollIntoView(comfirmation);
+            //waitForVisibility(comfirmation);
+            safeClick(comfirmation);
+
+            //Return success
+            By ReturnMessage = By.id("content");
+            waitForAjax();
+            waitForVisibility(ReturnMessage);
+            waitForStability(ReturnMessage);
+
+            WebElement comfirmReturn = waitForClickable(By.xpath("//*[@id=\"content\"]/div/a"));
+            waitForVisibility(comfirmReturn);
+            safeClick(comfirmReturn);
+
+            //go to product Order second time to ensure deletion
+            waitForVisibility(By.xpath("(//span[normalize-space()='My Account'])[1]"));
+            safeClick(waitForClickable(By.xpath("(//span[normalize-space()='My Account'])[1]")));
+            waitForVisibility(By.xpath("(//a[normalize-space()='Order History'])[1]"));
+            safeClick(waitForClickable(By.xpath("(//a[normalize-space()='Order History'])[1]")));
+            waitForVisibility(By.cssSelector("#content"));
+
+            //ensure the product is deleted
+            By deletedOrder = By.xpath("//td[@class='text-end' and normalize-space()='#" + orderNumber + "']");
+            if (isElementVisible(deletedOrder, 5)) {
+                return false; // Order still exists, deletion failed
+            }
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

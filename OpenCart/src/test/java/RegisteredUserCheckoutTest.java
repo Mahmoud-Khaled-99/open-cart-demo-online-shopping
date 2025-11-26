@@ -12,6 +12,7 @@ public class RegisteredUserCheckoutTest {
         SetupPage.driver.manage().window().maximize();
     }
 
+
     @Test(description = "Registered user full checkout flow")
     public void registeredUserCheckout() {
         RegisteredUserCheckout checkout = new RegisteredUserCheckout(SetupPage.driver);
@@ -23,6 +24,17 @@ public class RegisteredUserCheckoutTest {
 
         Assert.assertTrue(success, "Registered checkout flow failed or confirmation message not found.");
     }
+
+    @Test(description = "delete Order after checkout")
+    public void deleteOrderAfterCheckout() {
+        RegisteredUserCheckout checkout = new RegisteredUserCheckout(SetupPage.driver);
+        boolean deleteOrder = checkout.dropOrder(
+                "mahmoudkhaled99@gmail.com",
+                "123456789"
+                , 43);
+        Assert.assertTrue(deleteOrder, "The order which deleted should be disappear from order history.");
+    }
+
 
     @AfterMethod
     public void tearDown() {

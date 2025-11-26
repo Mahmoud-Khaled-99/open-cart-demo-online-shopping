@@ -1,0 +1,21 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Regression testing">
+    <test name="Automation Test Registration and Login">
+        <classes>
+            <class name="SignUpTest"/>
+            <class name="LogInTest"/>
+            <class name="LogOutTest"/>
+        </classes>
+    </test>
+
+    <test name="Checkout Process Testing for Registered Users and Delete Orders">
+        <classes>
+            <class name="RegisteredUserCheckoutTest">
+                <methods>
+                    <include name="registeredUserCheckout"/>
+                    <include name="deleteOrderAfterCheckout"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
