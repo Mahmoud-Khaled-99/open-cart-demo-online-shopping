@@ -8,8 +8,9 @@ import java.time.Duration;
  * Page object representing the Login page and related actions (with stable waits).
  */
 public class LogInPage extends SetupPage {
-
-
+    public LogInPage() {
+        super();
+    }
     // Consistent default timeout for waits
     private static final int DEFAULT_TIMEOUT = 10;
 
@@ -26,9 +27,7 @@ public class LogInPage extends SetupPage {
     @FindBy(xpath = "//*[@id=\"content\"]/h1")
     private WebElement loginHeader;
 
-    public LogInPage() {
-        super();
-    }
+
 
     // -------------------------------------------------------------
     // ⭐ Reusable Wait Helpers
