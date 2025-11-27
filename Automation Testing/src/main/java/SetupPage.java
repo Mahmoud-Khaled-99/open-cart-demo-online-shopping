@@ -1,15 +1,12 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
+
 
 public class SetupPage {
     public static final String BASE_URL = "http://localhost/opencart/index.php?route=account/login&language=en-gb";
@@ -24,16 +21,12 @@ public class SetupPage {
     public final String LastName = "Khaled";
 
 
+    public  WebDriverWait wait;
+    public  JavascriptExecutor js;
+
     public SetupPage() {
         // Default constructor
     }
-
-    public SetupPage(WebDriver driver) {
-        this.driver = driver;
-        SetupPage.driver = driver;
-        /*PageFactory.initElements(driver, this);*/
-    }
-
     /**
      * Initializes the WebDriver based on the provided browser name.
      *
@@ -140,5 +133,62 @@ public class SetupPage {
     public String getUniqueEmail() {
         return FirstName + System.currentTimeMillis() + "@gmail.com";
     }
+
+
+
+    // ========================================================================================================
+    // Helper Waits
+    // ========================================================================================================
+    public WebElement waitForVisibility(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    public WebElement waitForClickable(By locator) {
+        return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    public void waitForStability(By locator) {
+        WebElement element = waitForVisibility(locator);
+
+        // Wait until element stops moving or refreshing
+        new WebDriverWait(driver, Duration.ofSeconds(3)).until(driver -> {
+            try {
+                Point p1 = element.getLocation();
+                Thread.sleep(150); // micro-stability check
+                Point p2 = element.getLocation();
+                return p1.equals(p2);
+            } catch (StaleElementReferenceException | InterruptedException e) {
+                return false;
+            }
+        });
+    }
+
+    public void waitForAjax() {
+        new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> (Boolean) ((JavascriptExecutor) driver).executeScript("return window.jQuery != null && jQuery.active === 0;"));
+    }
+
+    // ========================================================================================================
+    // Helper Actions
+    // ========================================================================================================
+    public void safeClick(WebElement element) {
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        try {
+            element.click();
+        } catch (Exception e) {
+            // fallback to JS click
+            js.executeScript("arguments[0].click();", element);
+        }
+    }
+
+    public boolean isElementVisible(By locator, int timeoutSeconds) {
+        WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
+        shortWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        return true;   // Element became visible
+    }
+
+    public void scrollIntoView(WebElement element) {
+        js.executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+    }
+
 
 }

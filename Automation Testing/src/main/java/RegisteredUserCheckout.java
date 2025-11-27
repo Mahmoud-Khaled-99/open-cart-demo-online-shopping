@@ -2,73 +2,16 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 import java.util.List;
 
 public class RegisteredUserCheckout extends SetupPage {
-    private static final Duration DEFAULT_WAIT = Duration.ofSeconds(15);
     private final WebDriver driver;
-    private final WebDriverWait wait;
-    private final JavascriptExecutor js;
+
 
     public RegisteredUserCheckout(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, DEFAULT_WAIT);
         this.js = (JavascriptExecutor) driver;
-    }
-
-    // ========================================================================================================
-    // Helper Waits
-    // ========================================================================================================
-    private WebElement waitForVisibility(By locator) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-    }
-
-    private WebElement waitForClickable(By locator) {
-        return wait.until(ExpectedConditions.elementToBeClickable(locator));
-    }
-
-    private void waitForStability(By locator) {
-        WebElement element = waitForVisibility(locator);
-
-        // Wait until element stops moving or refreshing
-        new WebDriverWait(driver, Duration.ofSeconds(3)).until(driver -> {
-            try {
-                Point p1 = element.getLocation();
-                Thread.sleep(150); // micro-stability check
-                Point p2 = element.getLocation();
-                return p1.equals(p2);
-            } catch (StaleElementReferenceException | InterruptedException e) {
-                return false;
-            }
-        });
-    }
-
-    public void waitForAjax() {
-        new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> (Boolean) ((JavascriptExecutor) driver).executeScript("return window.jQuery != null && jQuery.active === 0;"));
-    }
-
-    // ========================================================================================================
-    // Helper Actions
-    // ========================================================================================================
-    private void safeClick(WebElement element) {
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-        try {
-            element.click();
-        } catch (Exception e) {
-            // fallback to JS click
-            js.executeScript("arguments[0].click();", element);
-        }
-    }
-
-    private boolean isElementVisible(By locator, int timeoutSeconds) {
-        WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds));
-        shortWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        return true;   // Element became visible
-    }
-
-    private void scrollIntoView(WebElement element) {
-        js.executeScript("arguments[0].scrollIntoView({block:'center'});", element);
     }
 
     // ========================================================================================================

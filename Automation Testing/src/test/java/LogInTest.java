@@ -24,7 +24,7 @@ public class LogInTest extends SetupPage {
     // -------------------------------------------------------------
     // Valid Login
     // -------------------------------------------------------------
-    @Test(description = "Verify login works with valid credentials Happy scenario")
+    @Test(description = "Verify login works with valid credentials Happy scenario", priority = 1)
     public void testValidLogin() {
         loginPage.setUsername(Email);
         loginPage.setPassword(Password);
@@ -40,7 +40,7 @@ public class LogInTest extends SetupPage {
     // -------------------------------------------------------------
     // Test Case 2: Invalid Email Format
     // -------------------------------------------------------------
-    @Test(description = "Verify login validation for invalid email format")
+    @Test(description = "Verify login validation for invalid email format", priority = 2)
     public void testInvalidEmail() {
         loginPage.setUsername("invalidEmail");
         loginPage.setPassword(Password);
@@ -56,7 +56,7 @@ public class LogInTest extends SetupPage {
     // -------------------------------------------------------------
     // Test Case 3: Invalid Password
     // -------------------------------------------------------------
-    @Test(description = "Verify login fails with wrong password")
+    @Test(description = "Verify login fails with wrong password", priority = 2)
     public void testInvalidPassword() {
         loginPage.setUsername(Email);
         loginPage.setPassword("WrongPass!");
@@ -71,7 +71,7 @@ public class LogInTest extends SetupPage {
     // -------------------------------------------------------------
     // Test Case 4: Empty Credentials
     // -------------------------------------------------------------
-    @Test(description = "Verify login validation for empty email + password fields")
+    @Test(description = "Verify login validation for empty email + password fields", priority = 2)
     public void testEmptyCredentials() {
         loginPage.setUsername("");
         loginPage.setPassword("");
