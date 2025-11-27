@@ -6,18 +6,15 @@ import org.testng.annotations.*;
  * Test class responsible for validating all Sign-Up scenarios.
  * Uses TestNG + Page Object Model + explicit waits (inside SignUp class).
  */
-public class SignUpTest {
+public class SignUpTest extends SetupPage {
 
-    // Base URL for homepage
-    private static final String BASE_URL =
-            "http://localhost/opencartproject/index.php?route=common/home&language=en-gb";
 
     private SignUp signUp;
 
     @BeforeMethod
     public void setUp() {
         // Initialize browser (choose chrome/firefox/edge)
-        SetupPage.BrowserRunner("chrome");
+        BrowserRunner(Browser);
 
         // Navigate to AUT homepage
         SetupPage.driver.get(BASE_URL);
@@ -31,7 +28,7 @@ public class SignUpTest {
      * Utility method to generate unique emails every test run.
      */
     private String getUniqueEmail() {
-        return "Mahmoud" + System.currentTimeMillis() + "@gmail.com";
+        return FirstName + System.currentTimeMillis() + "@gmail.com";
     }
 
     // -------------------------------------------------------------------------
@@ -45,8 +42,8 @@ public class SignUpTest {
         signUp.clickSignUp();
 
         // Fill form with valid details
-        signUp.setFirstName("Test");
-        signUp.setLastName("User");
+        signUp.setFirstName(FirstName);
+        signUp.setLastName(LastName);
         signUp.setEmail(getUniqueEmail());
         signUp.setPassword("Password123!");
         signUp.checkPrivacyPolicy();
@@ -71,7 +68,7 @@ public class SignUpTest {
 
         // First Name intentionally left empty
         signUp.setFirstName("");
-        signUp.setLastName("User");
+        signUp.setLastName(LastName);
         signUp.setEmail(getUniqueEmail());
         signUp.setPassword("Password123!");
         signUp.checkPrivacyPolicy();
@@ -94,7 +91,7 @@ public class SignUpTest {
         signUp.clickMyAccount();
         signUp.clickSignUp();
 
-        signUp.setFirstName("User");
+        signUp.setFirstName(FirstName);
         signUp.setLastName("");  // last name empty
         signUp.setEmail(getUniqueEmail());
         signUp.setPassword("Password123!");
@@ -118,8 +115,8 @@ public class SignUpTest {
         signUp.clickMyAccount();
         signUp.clickSignUp();
 
-        signUp.setFirstName("Mahmoud");
-        signUp.setLastName("User");
+        signUp.setFirstName(FirstName);
+        signUp.setLastName(LastName);
 
         // Email format invalid intentionally
         signUp.setEmail("invalidEmailFormat");
@@ -144,8 +141,8 @@ public class SignUpTest {
         signUp.clickMyAccount();
         signUp.clickSignUp();
 
-        signUp.setFirstName("Mahmoud");
-        signUp.setLastName("User");
+        signUp.setFirstName(FirstName);
+        signUp.setLastName(LastName);
         signUp.setEmail(getUniqueEmail());
 
         // Intentionally weak password

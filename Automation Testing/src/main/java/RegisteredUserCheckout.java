@@ -2,14 +2,11 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class RegisteredUserCheckout extends SetupPage {
     private static final Duration DEFAULT_WAIT = Duration.ofSeconds(15);
-    private static final String BASE_URL = "http://localhost/opencartproject/index.php?route=account/login&language=en-gb";
     private final WebDriver driver;
     private final WebDriverWait wait;
     private final JavascriptExecutor js;
@@ -224,8 +221,6 @@ public class RegisteredUserCheckout extends SetupPage {
             waitForVisibility(successMessage);
             waitForStability(successMessage);
             WebElement success = driver.findElement(successMessage);
-            //String successText = success.getText();
-            //System.out.println("Success Message: " + successText);
             return success.getText().contains("Your order has been placed");
 
         } catch (Exception e) {
@@ -276,9 +271,6 @@ public class RegisteredUserCheckout extends SetupPage {
             scrollIntoView(waitForVisibility(By.cssSelector("#input-return-reason-1")));
             safeClick(waitForClickable(By.cssSelector("#input-return-reason-1")));
             WebElement comfirmation = waitForClickable(By.xpath("//button[contains(normalize-space(.),'Submit')]"));
-            //scroll down to the button
-            //scrollIntoView(comfirmation);
-            //waitForVisibility(comfirmation);
             safeClick(comfirmation);
 
             //Return success

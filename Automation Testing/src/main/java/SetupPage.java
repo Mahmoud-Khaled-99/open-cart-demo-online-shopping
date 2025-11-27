@@ -10,8 +10,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class SetupPage {
+    public static final String BASE_URL = "http://localhost/opencart/index.php?route=account/login&language=en-gb";
+    public static final String Browser = "edge";
+    public static final String Email = "mahmoudkhaled99@gmail.com";
+    public static final String Password = "123456789";
+    public static final int ProductNumber = 1;
+    public final String FirstName = "Mahmoud";
+    public final String LastName = "Khaled";
     public static WebDriver driver = null;
     public static final int DEFAULT_TIMEOUT = 10;
+    public static final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
 
     public SetupPage() {
         // Default constructor

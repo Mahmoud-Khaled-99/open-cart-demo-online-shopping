@@ -10,19 +10,14 @@ import org.testng.annotations.Test;
 
 import java.time.Duration;
 
-public class LogOutTest {
-
-    private static final String BASE_URL =
-            "http://localhost/opencartproject/index.php?route=account/login&language=en-gb";
+public class LogOutTest extends SetupPage {
     private LogInPage loginPage;
     private LogOut logoutPage;
-
-    private static final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
 
     @BeforeMethod
     public void setUp() {
         // Launch browser
-        SetupPage.BrowserRunner("chrome");
+        BrowserRunner(Browser);
 
         // Navigate to login page
         SetupPage.driver.get(BASE_URL);
@@ -32,8 +27,8 @@ public class LogOutTest {
         PageFactory.initElements(SetupPage.driver, loginPage);
 
         // Log in
-        loginPage.setUsername("mahmoudkhaled99@gmail.com");
-        loginPage.setPassword("123456789");
+        loginPage.setUsername(Email);
+        loginPage.setPassword(Password);
         loginPage.clickLogin();
 
         // Wait until account page is loaded
@@ -77,7 +72,7 @@ public class LogOutTest {
         wait.until(ExpectedConditions.urlContains("route=common/home"));
 
         // Try navigating to My Account directly
-        SetupPage.driver.get("http://localhost/opencartproject/index.php?route=account/account");
+        SetupPage.driver.get(BASE_URL);
 
         // Expect redirection to login page
         wait.until(ExpectedConditions.urlContains("route=account/login"));
