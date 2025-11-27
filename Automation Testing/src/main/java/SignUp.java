@@ -1,12 +1,9 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
-
 
 public class SignUp extends SetupPage {
 
@@ -14,185 +11,154 @@ public class SignUp extends SetupPage {
         super();
     }
 
-    @FindBy(xpath = "//*[@id='top']//a[text()='Register']")
-    private WebElement SignUpBtn;
+    // -------------------------------------------------------------
+    // Locators (kept EXACTLY as you requested)
+    // -------------------------------------------------------------
 
-    @FindBy(id = "input-firstname")
-    private WebElement firstName;
+    private final By SignUpBtn = By.xpath("//*[@id='top']//a[text()='Register']");
+    private final By firstName = By.id("input-firstname");
+    private final By lastName = By.id("input-lastname");
+    private final By email = By.id("input-email");
+    private final By password_new = By.id("input-password");
+    private final By privacyPolicyCheckbox = By.xpath("//input[@type='checkbox' and @name='agree']");
+    private final By continueBtn = By.xpath("//form[@id='form-register']//button[text()='Continue']");
+    private final By agreeSignup = By.xpath("/html/body/div/main/div[2]/div/div/div/a");
+    private final By accountCreatedMessage = By.xpath("/html/body/div/main/div[2]/div/div/h1");
+    private final By emailError = By.id("error-email");
+    private final By repeatedEmailError = By.xpath("//*[@id=\"alert\"]/div");
+    private final By passwordError = By.id("error-password");
 
-    @FindBy(id = "input-lastname")
-    private WebElement lastName;
-
-    @FindBy(id = "input-email")
-    private WebElement email;
-
-    @FindBy(id = "input-password")
-    private WebElement password_new;
-
-    @FindBy(xpath = "//input[@type='checkbox' and @name='agree']")
-    private WebElement privacyPolicyCheckbox;
-
-    @FindBy(xpath = "//form[@id='form-register']//button[text()='Continue']")
-    private WebElement continueBtn;
-
-    // This element's XPath looks like it might be for a success message or a link after registration.
-    // If it's a link to agree to terms *before* registration, it should be handled differently.
-    // Assuming it's a confirmation link after successful registration for now.
-    @FindBy(xpath = "/html/body/div/main/div[2]/div/div/div/a")
-    private WebElement agreeSignup;
-
-    @FindBy(xpath = "/html/body/div/main/div[2]/div/div/h1")
-    private WebElement accountCreatedMessage;
-
-    @FindBy(id = "error-email")
-    private WebElement emailError;
-
-    @FindBy(xpath = "//*[@id=\"alert\"]/div")
-    private WebElement repeatedEmailError;
-
-    @FindBy(id = "error-password")
-    private WebElement passwordError;
+    // -------------------------------------------------------------
+    // Actions
+    // -------------------------------------------------------------
 
     public void clickSignUp() {
-        clickWhenClickable(SignUpBtn, 10); // Using clickWhenClickable for robustness
+
+        clickWhenClickable(driver.findElement(SignUpBtn) , 10);
     }
 
     public void setFirstName(String fname) {
-        firstName.clear();
-        firstName.sendKeys(fname);
+        driver.findElement(firstName).clear();
+        driver.findElement(firstName).sendKeys(fname);
     }
 
-    /**
-     * Enters the last name into the last name field.
-     * @param lname The last name to enter.
-     */
     public void setLastName(String lname) {
-        lastName.clear();
-        lastName.sendKeys(lname);
+        driver.findElement(lastName).clear();
+        driver.findElement(lastName).sendKeys(lname);
     }
 
-    /**
-     * Enters the email address into the email field.
-     * @param mail The email address to enter.
-     */
     public void setEmail(String mail) {
-        email.clear();
-        email.sendKeys(mail);
+        driver.findElement(email).clear();
+        driver.findElement(email).sendKeys(mail);
     }
 
-    /**
-     * Enters the password into the password field.
-     * @param pass The password to enter.
-     */
     public void setPassword(String pass) {
-        password_new.clear();
-        password_new.sendKeys(pass);
+        driver.findElement(password_new).clear();
+        driver.findElement(password_new).sendKeys(pass);
     }
 
-    /**
-     * Clicks the privacy policy checkbox.
-     */
     public void checkPrivacyPolicy() {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", privacyPolicyCheckbox);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", privacyPolicyCheckbox);
+        WebElement checkbox = driver.findElement(privacyPolicyCheckbox);
+        scrollTo(checkbox);
+        clickJS(checkbox);
     }
 
-    /**
-     * Clicks the Continue button on the registration form.
-     */
     public void clickContinue() {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", continueBtn);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", continueBtn);
+        WebElement btn = driver.findElement(continueBtn);
+        scrollTo(btn);
+        clickJS(btn);
     }
 
-    /**
-     * Clicks the 'Agree' link/button, typically found after successful registration.
-     */
     public void clickAgreeSignup() {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", agreeSignup);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", agreeSignup);
+        WebElement btn = driver.findElement(agreeSignup);
+        scrollTo(btn);
+        clickJS(btn);
     }
 
-    /**
-     * Performs the complete account registration process.
-     * @param firstName The first name for the new account.
-     * @param lastName The last name for the new account.
-     * @param email The email address for the new account.
-     * @param password The password for the new account.
-     */
-    public void registerAccount(String firstName, String lastName, String email, String password) {
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
-        setPassword(password);
+    // -------------------------------------------------------------
+    // Registration workflow
+    // -------------------------------------------------------------
+
+    public void registerAccount(String fname, String lname, String userEmail, String pass) {
+        setFirstName(fname);
+        setLastName(lname);
+        setEmail(userEmail);
+        setPassword(pass);
         checkPrivacyPolicy();
         clickContinue();
     }
 
+    // -------------------------------------------------------------
+    // Getters
+    // -------------------------------------------------------------
+
     public String getAccountCreatedMessage() {
-        return accountCreatedMessage.getText();
+        return driver.findElement(accountCreatedMessage).getText().trim();
     }
+
     public String getFirstFieldError() {
+
+        scrollTo(driver.findElement(firstName));
+
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-        WebElement firstNameField = driver.findElement(By.id("input-firstname"));
-
-        // Scroll into view so the error message becomes visible
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", firstNameField);
-
-        // Now wait for the error message
-        WebElement errorfirstname = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//*[@id=\"error-firstname\"]")
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.id("error-firstname")
         ));
-
-        return errorfirstname.getText().trim();
+        return error.getText().trim();
     }
-    public String getLastFieldError(){
+
+    public String getLastFieldError() {
+
+        scrollTo(driver.findElement(lastName));
+
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-        WebElement lastNameError = driver.findElement(By.id("input-lastname"));
-
-        // Scroll into view so the error message becomes visible
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", lastNameError);
-
-        // Now wait for the error message
-        WebElement errorlastname = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//*[@id=\"error-lastname\"]")
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.id("error-lastname")
         ));
-        return errorlastname.getText().trim();
+        return error.getText().trim();
     }
 
-    public String getEmailFieldError(){
-        return emailError.getText();
+    public String getEmailFieldError() {
+        return driver.findElement(emailError).getText().trim();
     }
+
     public String getRepeatedEmailError() {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement alertBox = driver.findElement(repeatedEmailError);
+        scrollTo(alertBox);
 
-        // Scroll to the alert box
-        ((JavascriptExecutor) driver)
-                .executeScript("arguments[0].scrollIntoView(true);", repeatedEmailError);
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOf(alertBox));
 
-        // Wait until the alert becomes visible
-        wait.until(ExpectedConditions.visibilityOf(repeatedEmailError));
-
-        return repeatedEmailError.getText().trim();
+        return alertBox.getText().trim();
     }
-    public String getPasswordFieldError(){
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-        // Scroll to the alert box
-        ((JavascriptExecutor) driver)
-                .executeScript("arguments[0].scrollIntoView(true);", passwordError);
+    public String getPasswordFieldError() {
 
-        // Wait until the alert becomes visible
-        wait.until(ExpectedConditions.visibilityOf(passwordError));
+        WebElement element = driver.findElement(passwordError);
+        scrollTo(element);
 
-        return passwordError.getText();
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOf(element));
+
+        return element.getText().trim();
     }
 
     public String getCurrentUrl() {
         return driver.getCurrentUrl();
     }
-}
 
+    // -------------------------------------------------------------
+    // Helper methods
+    // -------------------------------------------------------------
+
+    private void scrollTo(WebElement element) {
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    private void clickJS(WebElement element) {
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].click();", element);
+    }
+}

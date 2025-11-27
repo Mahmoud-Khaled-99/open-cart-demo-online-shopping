@@ -21,15 +21,12 @@ public class SignUpTest extends SetupPage {
 
         // Initialize Page Object using PageFactory
         signUp = new SignUp();
-        PageFactory.initElements(SetupPage.driver, signUp);
     }
 
     /**
      * Utility method to generate unique emails every test run.
      */
-    private String getUniqueEmail() {
-        return FirstName + System.currentTimeMillis() + "@gmail.com";
-    }
+
 
     // -------------------------------------------------------------------------
     // ✔ Test Case 1 — Happy Path: Valid Registration
@@ -140,11 +137,9 @@ public class SignUpTest extends SetupPage {
 
         signUp.clickMyAccount();
         signUp.clickSignUp();
-
         signUp.setFirstName(FirstName);
         signUp.setLastName(LastName);
         signUp.setEmail(getUniqueEmail());
-
         // Intentionally weak password
         signUp.setPassword("++6");
         signUp.checkPrivacyPolicy();
